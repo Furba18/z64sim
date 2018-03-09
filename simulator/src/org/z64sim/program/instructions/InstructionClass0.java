@@ -49,17 +49,16 @@ public class InstructionClass0 extends Instruction {
     public void run() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
 
-    public static String disassemble(int address) {
+    public static String stringRepresentation(int address) {
         byte b[] = new byte[8];
         for(int i = 0; i < 8; i++) {
             b[i] = Memory.getProgram().program[address + i];
         }
         
-      //  JOptionPane.showMessageDialog(null, "" + address + " - " + b[0] + " " + b[1]);
-        
         String instr = "";
-        switch (b[0]){
+        switch (getType(b)){
             case 0x00:
                 instr+= "";
                 break;

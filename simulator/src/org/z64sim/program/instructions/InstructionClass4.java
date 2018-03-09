@@ -104,14 +104,14 @@ public class InstructionClass4 extends Instruction {
     }
 
     
-    public static String disassemble(int address) {
+    public static String stringRepresentation(int address) {
         byte b[] = new byte[8];
         for(int i = 0; i < 8; i++) {
             b[i] = Memory.getProgram().program[address + i];
         }
         
         String instr = "";
-        switch (b[0]){
+        switch (getOpcode(b)){
             case 0x40:
                 instr+= "clc";
                 break;  

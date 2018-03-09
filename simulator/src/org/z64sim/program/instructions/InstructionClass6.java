@@ -81,41 +81,41 @@ public class InstructionClass6 extends Instruction {
     }
 
    
-    public static String disassemble(int address) {
+    public static String stringRepresentation(int address) {
         byte b[] = new byte[8];
         for(int i = 0; i < 8; i++) {
             b[i] = Memory.getProgram().program[address + i];
         }
         String instr="";
-        switch (b[0]){
-            case 0x60:
+        switch (getOpcode(b)&0b00001111){
+            case 0x0:
                 instr+="jc";
                 break;
-            case 0x61:
+            case 0x1:
                 instr+="jp";
                 break;
-            case 0x62:
+            case 0x2:
                 instr+="jz";
                 break;
-            case 0x63:
+            case 0x3:
                 instr+="js";
                 break;
-            case 0x64:
+            case 0x4:
                 instr+="jo";
                 break;
-            case 0x65:
+            case 0x5:
                 instr+="jnc";
                 break;
-            case 0x66:
+            case 0x6:
                 instr+="jnp";
                 break;
-            case 0x67:
+            case 0x7:
                 instr+="jnz";
                 break;
-            case 0x68:
+            case 0x8:
                 instr+="jns";
                 break;
-            case 0x69:
+            case 0x9:
                 instr+="jno";
                 break;
             default:
@@ -124,7 +124,7 @@ public class InstructionClass6 extends Instruction {
         
         int sizeInt = 0;
         
-        switch(byteToBits(b[1],5,4)){
+        switch(getDs(b)){
             case 0:
                 sizeInt = 8;
                 break;
@@ -141,7 +141,7 @@ public class InstructionClass6 extends Instruction {
                 throw new RuntimeException("Wrong value size");
         }
        
-        int destRegister = byteToBits(b[3],3,0);
+        int destRegister = getDest(b);
         String dest_Reg = Register.getRegisterName(destRegister, sizeInt);
         instr+=" "+dest_Reg;
 

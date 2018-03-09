@@ -284,7 +284,7 @@ public class InstructionClass2 extends Instruction {
     
     private static String opcodes[] = {"add","sub","adc","sbb","cmp","test","neg","and","or","xor","not","bt"};
     
-    public static String disassemble(int address) {
+    public static String stringRepresentation(int address) {
         
         byte[] b = new byte[8];
         for(int i = 0; i < 8; i++) {
@@ -294,12 +294,12 @@ public class InstructionClass2 extends Instruction {
         byte[] b2 = new byte[8];
         
         String instr="";
-        int index = byteToBits(b[0],3,0);
+        int index = getType(b);
         instr+=opcodes[index];
         
         int sizeIntDs=0;
         String sizeDest="";
-        switch(byteToBits(b[1],5,4)){
+        switch(getDs(b)){
             case 0:
                 sizeDest="b ";
                 sizeIntDs = 8;
@@ -321,7 +321,7 @@ public class InstructionClass2 extends Instruction {
         }
         int sizeIntSs=0;
         String sizeSorg="";
-        switch(byteToBits(b[1],7,6)){
+        switch(getSs(b)){
             case 0:
                 sizeSorg ="b";
                 sizeIntSs = 8;
@@ -342,8 +342,8 @@ public class InstructionClass2 extends Instruction {
                 throw new RuntimeException("Wrong value size");
         }
         
-        int destRegister = byteToBits(b[3],3,0);
-        int sourRegister = byteToBits(b[3],7,4);
+        int destRegister = getDest(b);
+        int sourRegister = getBase(b);
         String sour_Reg = Register.getRegisterName(sourRegister, sizeIntSs);
         String dest_Reg = Register.getRegisterName(destRegister, sizeIntDs);
         
@@ -375,9 +375,6 @@ public class InstructionClass2 extends Instruction {
             immed = wrapped.getLong();
             if (immed < 0) immed += Math.pow(2, 64);
             instr+="$"+immed;
-            
-            Instruction.skip = true;
-            
         } else if(hasImm && !hasDisp) {
             b2[4] = b[4];
             b2[5] = b[5];
@@ -420,7 +417,7 @@ public class InstructionClass2 extends Instruction {
             }
             
             if(isIp){
-                int indexRegister = byteToBits(b[2],3,0);
+                int indexRegister = getIndexRegister(b);
                 String index_Reg = Register.getRegisterName(indexRegister, sizeIntSs);
                 instr+=", "+index_Reg;
             }
@@ -428,7 +425,7 @@ public class InstructionClass2 extends Instruction {
                 instr+=", ";
             }
             
-            switch(byteToBits(b[2],5,4)){
+            switch(getScale(b)){
                 case 0b00:
                     instr+=", 1), ";
                     break;
@@ -455,7 +452,7 @@ public class InstructionClass2 extends Instruction {
             }
             
             if(isIp){
-                int indexRegister = byteToBits(b[2],3,0);
+                int indexRegister = getIndexRegister(b);
                 String index_Reg = Register.getRegisterName(indexRegister, sizeIntDs);
                 instr+=", "+index_Reg;
             }
@@ -463,7 +460,7 @@ public class InstructionClass2 extends Instruction {
                 instr+=", ";
             }
             
-            switch(byteToBits(b[2],5,4)){
+            switch(getScale(b)){
                 case 0b00:
                     instr+=", 1)";
                     break;

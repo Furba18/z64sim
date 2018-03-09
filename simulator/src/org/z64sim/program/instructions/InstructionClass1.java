@@ -268,31 +268,7 @@ public class InstructionClass1 extends Instruction {
    
         enc[0] = (byte)((byte)0b00010000 | this.type);
         this.setEncoding(enc);
-        System.out.println(enc[0]);
-        System.out.println("ss è: "+ss);
-        System.out.println("ds è: "+sd);
-        System.out.println("di è: "+di);
-        System.out.println("mem è :"+mem);
-        System.out.println("Bp è: "+Bp);
-        System.out.println("Ip è: "+Ip);
-        System.out.println("Scale è: "+Scale);
-        System.out.println("IndexRegister è: "+Index_Register);
-        System.out.println("sourReg è: "+sour_Register);
-        System.out.println("destReg è: "+dest_Register);
-        System.out.println("enc[4] è: "+enc[4]);
-        System.out.println("enc[5] è: "+enc[5]);
-        System.out.println("enc[6] è: "+enc[6]);
-        System.out.println("enc[7[ è: "+enc[7]);
-        if(enc.length > 8){
-        System.out.println(enc[8]);
-        System.out.println(enc[9]);
-        System.out.println(enc[10]);
-        System.out.println(enc[11]);
-        System.out.println(enc[12]);
-        System.out.println(enc[13]);
-        System.out.println(enc[14]);
-        System.out.println(enc[15]);}
-        
+       
 
     }
 
@@ -309,7 +285,7 @@ public class InstructionClass1 extends Instruction {
     private static String opcodes[] = {"mov", "movs", "movz","lea", "push", "pop","pushf","popf",
         "movs","stos"};
     
-    public static String disassemble(int address) {
+    public static String stringRepresentation(int address) {
         
         byte[] b = new byte[8];
         for(int i = 0; i < 8; i++) {
@@ -319,12 +295,12 @@ public class InstructionClass1 extends Instruction {
         byte[] b2 = new byte[8];
         
         String instr="";
-        int index = byteToBits(b[0],3,0);
+        int index = getType(b);
         instr+=opcodes[index];
         
         int sizeIntDs=0;
         String sizeDest="";
-        switch(byteToBits(b[1],5,4)){
+        switch(getDs(b)){
             case 0:
                 sizeDest="b ";
                 sizeIntDs = 8;
@@ -346,7 +322,7 @@ public class InstructionClass1 extends Instruction {
         }
         int sizeIntSs=0;
         String sizeSorg="";
-        switch(byteToBits(b[1],7,6)){
+        switch(getSs(b)){
             case 0:
                 sizeSorg ="b";
                 sizeIntSs = 8;
@@ -366,8 +342,8 @@ public class InstructionClass1 extends Instruction {
             default:
                 throw new RuntimeException("Wrong value size");
         }
-        int destRegister = byteToBits(b[3],3,0);
-        int sourRegister = byteToBits(b[3],7,4);
+        int destRegister = getDest(b);
+        int sourRegister = getBase(b);
         String sour_Reg = Register.getRegisterName(sourRegister, sizeIntSs);
         String dest_Reg = Register.getRegisterName(destRegister, sizeIntDs);
         
@@ -404,8 +380,6 @@ public class InstructionClass1 extends Instruction {
             immed = wrapped.getLong();
             if (immed < 0) immed += Math.pow(2, 64);
             instr+="$"+immed+",";
-            
-            Instruction.skip = true;
             
         } else if(hasImm && !hasDisp) {
             byte b3[] = new byte[4];
@@ -451,7 +425,7 @@ public class InstructionClass1 extends Instruction {
             }
             
             if(isIp){
-                int indexRegister = byteToBits(b[2],3,0);
+                int indexRegister = getIndexRegister(b);
                 String index_Reg = Register.getRegisterName(indexRegister, sizeIntSs);
                 instr+=", "+index_Reg;
             }
@@ -459,7 +433,7 @@ public class InstructionClass1 extends Instruction {
                 instr+=", ";
             }
             
-            switch(byteToBits(b[2],5,4)){
+            switch(getScale(b)){
                 case 0b00:
                     instr+=", 1), ";
                     break;
@@ -486,7 +460,7 @@ public class InstructionClass1 extends Instruction {
             }
             
             if(isIp){
-                int indexRegister = byteToBits(b[2],3,0);
+                int indexRegister = getIndexRegister(b);
                 String index_Reg = Register.getRegisterName(indexRegister, sizeIntDs);
                 instr+=", "+index_Reg;
             }
@@ -494,7 +468,7 @@ public class InstructionClass1 extends Instruction {
                 instr+=", ";
             }
             
-            switch(byteToBits(b[2],5,4)){
+            switch(getScale(b)){
                 case 0b00:
                     instr+=", 1)";
                     break;

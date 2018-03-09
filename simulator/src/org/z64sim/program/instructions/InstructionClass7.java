@@ -60,14 +60,14 @@ public class InstructionClass7 extends Instruction {
     }
 
     
-    public static String disassemble(int address) {
+    public static String stringRepresentation(int address) {
         byte b[] = new byte[8];
         for(int i = 0; i < 8; i++) {
             b[i] = Memory.getProgram().program[address + i];
         }
         String instr="";
         
-        switch (b[0]){
+        switch (getOpcode(b)){
             case 0x70:
                 instr+="in";
                 break;
@@ -83,7 +83,7 @@ public class InstructionClass7 extends Instruction {
             default:
                 throw new RuntimeException("Unknown instruction type");
         }
-        switch(b[1]){
+        switch(getMode(b)){
             case 0x00:
                 instr = instr.concat("b");
                 break;

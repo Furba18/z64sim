@@ -74,8 +74,13 @@ public class MemoryTableModel extends AbstractTableModel implements TableModelLi
             case 1: // Mnemonic
                 if(address < Memory.getProgram()._start || address >= Memory.getProgram()._dataStart)
                     ret = "";
-                else
-                    ret = Instruction.disassemble(address);
+                else {
+                    if(Instruction.check(address)) {
+                        return Instruction.stringRepresentation(address);
+                    } else {
+                        ret = "";
+                    }
+                }
                 break;
             case 2: // Hex
                 ret = String.format("%016x", wrapped.getLong());

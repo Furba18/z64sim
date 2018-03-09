@@ -146,14 +146,14 @@ public class InstructionClass3 extends Instruction {
     }
 
     
-    public static String disassemble(int address) {
+    public static String stringRepresentation(int address) {
         byte b[] = new byte[8];
         for(int i = 0; i < 8; i++) {
             b[i] = Memory.getProgram().program[address + i];
         }
         
         String instr="";
-        switch (b[0]){
+        switch (getOpcode(b)){
             case 0x30:
             case 0x31:
                 instr+="shl ";
@@ -188,7 +188,7 @@ public class InstructionClass3 extends Instruction {
         }
         int sizeInt=0;
         
-        switch(byteToBits(b[1],7,6)){
+        switch(getSs(b)){
             case 0:
                 sizeInt = 8;
                 break;
@@ -207,18 +207,10 @@ public class InstructionClass3 extends Instruction {
         if(byteToBits(b[1],2,2) == 1){
             instr +="$"+((b[7]<<24)+(b[6]<<16)+(b[5]<<8)+b[4])+",";
         }
-        int destRegister = byteToBits(b[3],3,0);
+        int destRegister = getDest(b);
         String dest_Reg = Register.getRegisterName(destRegister, sizeInt);
         instr+=dest_Reg;
         
-        System.out.println(b[0]);
-        System.out.println(b[1]);
-        System.out.println(b[2]);
-        System.out.println(b[3]);
-        System.out.println(b[4]);
-        System.out.println(b[5]);
-        System.out.println(b[6]);
-        System.out.println(b[7]);
         return instr;
         
     }
